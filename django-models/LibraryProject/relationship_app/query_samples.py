@@ -8,7 +8,7 @@ book1 = Book.objects.create(title="Python", author=author)
 book2 = Book.objects.create(title="Flask", author=author)
 
 # Create a library and add books
-library = Library.objects.create(name="HardCopySections")
+library = Library.objects.get(name="HardCopySections")
 library.books.add(book1, book2)
 
 # Create a librarian and assign them to the library
