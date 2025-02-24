@@ -3,10 +3,10 @@ from .models import Book, Author, Library, Librarian
 author_name = Author.objects.create(name="Limah")
 author_name.save()
 
-author = Author.objects.get(name=author_name)
+# author = Author.objects.get(name=author_name)
 author = Author.objects.filter(author = author)
 
-author_name = author.objects.filter(author = author)
+author_name = author.objects.filter(author = Author)
 book = Book.objects.create(title="Python", author=author_name)
 book.save()
 book = Book.objects.create(title="Flask", author=author_name)
