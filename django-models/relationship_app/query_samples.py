@@ -1,29 +1,32 @@
-import os
-import django
+from .models import Book, Author, Library, Librarian
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'your_project_name.settings')
-django.setup()
+author_name = Author.objects.create(name="Chioma")
+author_name.save()
 
-from relationship_app.models import Author, Book, Library, Librarian
+author = Author.objects.get(name=author_name)
+author = Author.objects.filter(author = author)
 
-def get_books_by_author(author_name):
-    author = Author.objects.get(name=author_name)
-    books = Book.objects.filter(author=author)
-    for book in books:
-        print(book.title)
+author_name = author.objects.filter(author = author)
+book = Book.objects.create(title="Python", author=author_name)
+book.save()
+book = Book.objects.create(title="Flask", author=author_name)
+book.save()
+library_name = Library.objects.create(name = "HardCopySections", book = book)
+library_name.save()
+librarian_name = Librarian(name = "Palmer")
+librarian_name.save()
 
-def get_books_in_library(library_name):
-    library = Library.objects.get(name=library_name)
-    books = library.books.all()
-    for book in books:
-        print(book.title)
+# Query all books by a specific author.
+book = Book.objects.filter(author=1)
+print(book.values())
 
-def get_librarian_for_library(library_name):
-    library = Library.objects.get(name=library_name)
-    librarian = Librarian.objects.get(library=library)
-    print(librarian.name)
+# List all books in a library.
+books = Library.objects.get(name=library_name)
+books.all()
 
-if __name__ == "__main__":
-    get_books_by_author("J.K. Rowling")
-    get_books_in_library("Central Library")
-    get_librarian_for_library("Central Library")
+# Retrieve the librarian for a library.
+librarian = Librarian.objects.get(library=librarian_name)
+print(librarian_name)
+
+#  ["Librarian.objects.get(library="]
+#  ["objects.filter(author=author)"]
