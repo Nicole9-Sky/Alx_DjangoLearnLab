@@ -22,3 +22,9 @@ urlpatterns = [
     path('relationship_app/', include('relationship_app.urls')),
     path('relation/', include('relation.urls')),
 ]
+
+urlpatterns = [
+    path("books/", list_books, name='list_books')
+    path("library/<int:id>", LibraryDetailView.as_view(), name='library')
+]
+
