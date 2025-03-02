@@ -10,10 +10,9 @@ class BookAdmin(admin.ModelAdmin):
     list_display = ('title', 'author', 'publication_year')
 admin.site.register(Book, BookAdmin)
 
-
-@admin.register(CustomUser)
 class CustomUserAdmin(admin.ModelAdmin):
     list_display = ('email', 'username', 'date_of_birth', 'profile_photo')
     
+admin.site.register(CustomUser, CustomUserAdmin)
 
     
