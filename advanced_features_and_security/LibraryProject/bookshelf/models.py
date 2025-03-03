@@ -27,6 +27,18 @@ class Book(models.Model):
     author = models.CharField(max_length=100)        
     publication_year = models.IntegerField()
     
+    class Meta:
+        permissions = [
+            ('cant_view', 'can_View'),
+            ('can_create', 'can_Create'),
+            ('can_edit', 'can_Edit'),
+            ('can_delete', 'can_Delete'),
+        ]
+    
+    def __str__(self):
+        return self.title
+    
+    
     
 # Define roles
 ROLE_CHOICES = [
