@@ -28,3 +28,9 @@ def delete_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     book.delete()
     return render(request, 'bookshelf/delete_book.html')
+
+class BookListView(PermissionRequiredMixin, ListView):
+    model = Book
+    template_name = "bookshelf/book_list.html"
+    context_object_name = "books"
+    permission_required = "bookshelf.can_view"
