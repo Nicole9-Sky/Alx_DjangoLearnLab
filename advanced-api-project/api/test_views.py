@@ -10,6 +10,7 @@ class BookAPITestCase(TestCase):
         self.book1 = Book.objects.create(title="Django for Beginners", author=self.author, publication_year=2021)
 
     def test_create_book(self):
+        self.client.login(username="testuser", password="testpassword")
         data = {
             "title": "New Django Book",
             "author": self.author.id,  # Fix: Use author ID
