@@ -4,10 +4,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import UserRegistrationForm
 from django.shortcuts import get_object_or_404
-from .models import Post, Comment
+from .models import Post, Comment, Tag
 from .forms import CommentForm 
 from django.views.generic import ListView,  DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin,  UserPassesTestMixin
+from django.db.models import Q
 
 
 class PostListView(ListView):
@@ -142,3 +143,23 @@ def profile(request):
 
 def home(request):
     return render(request, 'blog/home.html')
+
+
+def search_posts(request):
+    query = request.GET.get("q")
+    results = Post.objects.all()
+    
+    if query:
+        results = results.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query)|
+            Q(tags__name__icontains=query)
+        ).distinct()
+        
+        return render(request, "blog/search_results.html", {'query': query, 'results': results})
+    
+    
+def posts_by_tag(request, tag_name):
+    tag = get_object_or_404(Tag, name=tag_name)
+    posts = post.objects.filter(tags=tag)
+    return render(request, "blog/posts_by_tag.html", {"tag": tag, "posts": posts})
