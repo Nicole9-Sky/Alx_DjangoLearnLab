@@ -5,7 +5,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from .forms import UserRegistrationForm
 from .models import Post 
 from django.views.generic import ListView,  DetailView, CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin,  UserPassesTestMixin
+
 
 class PostListView(ListView):
     model = Post
@@ -14,11 +15,16 @@ class PostListView(ListView):
     ordering = ["-date_posted"]
     
     
-class PostDetailView(DetailView):
+class PostDetailView(LoginRequiredMixin, UserPassesTestMixin,DetailView):
     model = Post
     template_name = "blog/post_detail.html"
+    success_url = "/"
     
-class PostCreateView(LoginRequiredMixin, CreateView):
+    def test_func(self):
+        post = self.get_object()
+        return self.request.user == post.author
+    
+class PostCreateView(LoginRequiredMixin,  UserPassesTestMixin, CreateView):
     model = Post
     templates_name = "blog/post_form.html"
     fields = ["title", "content"]
@@ -27,7 +33,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         form.instance.author = self.request.user
         return super().form_valid(form)
     
-class PostUpdateView(LoginRequiredMixin, UpdateView):
+class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin,UpdateView):
     model = Post
     fields = ["title", "content"]
     template_name = "blog/post_form.html"
@@ -40,7 +46,7 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
         post = self.get_object()
         return self.request.user == post.author
     
-class PostDetailView(LoginRequiredMixin, DeleteView):
+class PostDetailView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     template_name = "blog/post_confirm_delete.html"
     success_url = "/"
