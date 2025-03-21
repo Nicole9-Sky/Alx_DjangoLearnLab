@@ -9,7 +9,6 @@ from django.views.generic import ListView,  DetailView, CreateView, UpdateView, 
 from django.contrib.auth.mixins import LoginRequiredMixin,  UserPassesTestMixin
 
 
-
 class PostListView(ListView):
     model = Post
     template_name = "blog/home.html"
@@ -90,6 +89,7 @@ def delete_comment(request, comment_id):
     post_id = comment.post.id
     comment.delete()
     return redirect("post-detail", pk=post_id)
+
     
 def register(request):
     if request.method == "POST":
@@ -101,6 +101,19 @@ def register(request):
     else:
         form = UserRegisterForm()
     return render(request, "blog/register.html", {"form": form})
+
+@login_required
+def update_comment(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id, author=request.user)
+    if request.method == "POST":
+        form = CommentForm(request.POST, instance=comment)
+        if form.is_valid():
+            form.save()
+            return redirect('post-detail', pk=comment.post.id)
+    else:
+        form = CommentForm(instance=comment)
+    return render(request, 'blog/edit_comment.html', {'form': form})
+
 
 def user_login(request):
     if request.method == "POST":
