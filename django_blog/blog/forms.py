@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from .models import Comment
 from .models import Post, Tag
 from django import forms
+from taggit.forms import TagWidget
 
 class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -30,6 +31,9 @@ class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = ['title', 'content', 'tags']
+        widgets = {
+            'tags': TagWidget(),  
+        }
         
     def save(self, commit=True):
         post = super().save(commit=False)
@@ -40,3 +44,6 @@ class PostForm(forms.ModelForm):
                 tag, created = Tag.objects.get_or_create(name=name.strip())
                 post.tags.add(tag)
         return post
+    
+class SearchForm(forms.Form):
+    query = forms.CharField(label="Search", max_length=100)

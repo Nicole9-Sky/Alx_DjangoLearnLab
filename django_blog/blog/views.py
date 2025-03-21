@@ -9,6 +9,7 @@ from .forms import CommentForm
 from django.views.generic import ListView,  DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin,  UserPassesTestMixin
 from django.db.models import Q
+from .forms import SearchForm
 
 
 class PostListView(ListView):
@@ -146,9 +147,11 @@ def home(request):
 
 
 def search_posts(request):
-    query = request.GET.get("q")
-    results = Post.objects.all()
-    
+    query = request.GET.get('query')
+    results = Post.objects.filter(title__icontains=query) if query else []
+    return render(request, 'blog/search_results.html', {'results': results, 'query': query})
+
+
     if query:
         results = results.filter(
             Q(title__icontains=query) |
