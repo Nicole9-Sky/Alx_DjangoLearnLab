@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from blog.views import register, profile, home 
+from blog.views import add_comment, edit_comment, delete_comment
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,4 +27,7 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='blog/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
     path('profile/', profile, name='profile'),
+    path('post/<int:post_id>/comments/new/', add_comment, name='add_comment'),
+    path('post/<int:post_id>/comments/<int:comment_id>/edit/', edit_comment, name='edit_comment'),
+    path('comments/<int:comment_id>/delete/', delete_comment, name='delete_comment'),
 ]
