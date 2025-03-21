@@ -7,11 +7,13 @@ class Post(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
     published_date = models.DateTimeField(auto_now_add=True)
-    tags = models.ManyToManyField('Tag', blank=True)
+    tags = models.ManyToManyField('taggit.Tag', blank=True)
     tags = TaggableManager()
     updated_at = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     
+    def get_absolute_url(self):
+        return reverse("post_detail", kwargs={"pk": self.pk})
     
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

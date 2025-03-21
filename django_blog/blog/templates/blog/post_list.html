@@ -9,3 +9,16 @@
     </article>
   {% endfor %}
 {% endblock %}
+
+{% extends "blog/base.html" %}
+
+{% block content %}
+  <h2>Posts tagged: {{ tag.name }}</h2>
+  {% for post in posts %}
+    <h3><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3>
+    <p>{{ post.content|truncatewords:30 }}</p>
+  {% empty %}
+    <p>No posts found with this tag.</p>
+  {% endfor %}
+{% endblock %}
+
