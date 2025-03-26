@@ -18,3 +18,4 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_date):
         user = get_user_model().objects.create_user(**validated_data)
         Token.objects.create(user=user)
+        return user
