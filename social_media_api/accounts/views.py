@@ -75,3 +75,24 @@ class UnfollowUserView(generics.GenericAPIView):
             return Response({"message": "You have unfollowed this user."}, status=200)
         except CustomUser.DoesNotExist:
             return Response({"error": "User not found."}, status=404)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def follow_user(request, user_id):
+    try:
+        user_to_follow = CustomUser.objects.get(id=user_id)
+        request.user.following.add(user_to_follow)  # ✅ Add follow relationship
+        return Response({"message": "Followed successfully"}, status=200)
+    except CustomUser.DoesNotExist:
+        return Response({"error": "User not found"}, status=404)
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def unfollow_user(request, user_id):
+    try:
+        user_to_unfollow = CustomUser.objects.get(id=user_id)
+        request.user.following.remove(user_to_unfollow)  # ✅ Remove follow relationship
+        return Response({"message": "Unfollowed successfully"}, status=200)
+    except CustomUser.DoesNotExist:
+        return Response({"error": "User not found"}, status=404)
