@@ -46,8 +46,7 @@ class FeedView(generics.ListAPIView):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def like_post(request, pk):
-    """Handles liking a post and creating a notification."""
-    post = get_object_or_404(Post, pk=pk)  # ✅ This line must be present
+    post = generics.get_object_or_404(Post, pk=pk)  # ✅ This line must be present
 
     # Check if the user already liked the post
     like, created = Like.objects.get_or_create(user=request.user, post=post)
@@ -68,8 +67,7 @@ def like_post(request, pk):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def unlike_post(request, pk):
-    """Handles unliking a post."""
-    post = get_object_or_404(Post, pk=pk)  # ✅ This line must be present
+    post = generics.get_object_or_404(Post, pk=pk)  # ✅ This line must be present
 
     like = Like.objects.filter(user=request.user, post=post)
     if not like.exists():
