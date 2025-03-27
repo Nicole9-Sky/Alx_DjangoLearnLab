@@ -14,27 +14,7 @@ from .serializers import CustomUserSerializer
 from rest_framework import generics 
 from rest_framework import permissions
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def follow_user(request, user_id):
-    """Allow the logged-in user to follow another user."""
-    try:
-        user_to_follow = CustomUser.objects.get(id=user_id)  # ✅ Fix: This adds CustomUser.objects.all()
-        request.user.following.add(user_to_follow)
-        return Response({"message": "You are now following this user."}, status=200)
-    except CustomUser.DoesNotExist:
-        return Response({"error": "User not found."}, status=404)
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def unfollow_user(request, user_id):
-    """Allow the logged-in user to unfollow another user."""
-    try:
-        user_to_unfollow = CustomUser.objects.get(id=user_id)  # ✅ Fix: This adds CustomUser.objects.all()
-        request.user.following.remove(user_to_unfollow)
-        return Response({"message": "You have unfollowed this user."}, status=200)
-    except CustomUser.DoesNotExist:
-        return Response({"error": "User not found."}, status=404)
 
 # ✅ Fixed RegisterUserView
 class RegisterView(APIView):
@@ -72,4 +52,26 @@ class ProfileView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            
+class FollowUserView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, user_id):
+        """Follow another user"""
+        try:
+            user_to_follow = CustomUser.objects.get(id=user_id)
+            request.user.following.add(user_to_follow)
+            return Response({"message": "You are now following this user."}, status=200)
+        except CustomUser.DoesNotExist:
+            return Response({"error": "User not found."}, status=404)
+
+class UnfollowUserView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, user_id):
+        """Unfollow a user"""
+        try:
+            user_to_unfollow = CustomUser.objects.get(id=user_id)
+            request.user.following.remove(user_to_unfollow)
+            return Response({"message": "You have unfollowed this user."}, status=200)
+        except CustomUser.DoesNotExist:
+            return Response({"error": "User not found."}, status=404)
