@@ -4,9 +4,24 @@ from .serializers import PostSerializer, CommentSerializer
 from rest_framework import viewsets, permissions
 from rest_framework import filters
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
 
 
 # Create your views here.
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_feed(request):
+    # Get all posts from users the current user follows
+    followed_users = request.user.following.all()
+    posts = Post.objects.filter(author__in=followed_users).order_by('-created_at')
+    
+    # Return a simplified response
+    feed_data = [{"author": post.author.username, "content": post.content, "created_at": post.created_at} for post in posts]
+    return Response(feed_data)
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10  # Show 5 posts per page
