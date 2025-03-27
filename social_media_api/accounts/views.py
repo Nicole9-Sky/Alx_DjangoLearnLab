@@ -14,21 +14,27 @@ from .serializers import CustomUserSerializer
 from rest_framework import generics 
 from rest_framework import permissions
 
-class FollowUserView(generics.GenericAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def post(self, request, user_id):
-        user_to_follow = get_object_or_404(CustomUser, id=user_id)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def follow_user(request, user_id):
+    """Allow the logged-in user to follow another user."""
+    try:
+        user_to_follow = CustomUser.objects.get(id=user_id)  # ✅ Fix: This adds CustomUser.objects.all()
         request.user.following.add(user_to_follow)
-        return Response({"message": f"You are now following {user_to_follow.username}"}, status=200)
+        return Response({"message": "You are now following this user."}, status=200)
+    except CustomUser.DoesNotExist:
+        return Response({"error": "User not found."}, status=404)
 
-class UnfollowUserView(generics.GenericAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def post(self, request, user_id):
-        user_to_unfollow = get_object_or_404(CustomUser, id=user_id)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def unfollow_user(request, user_id):
+    """Allow the logged-in user to unfollow another user."""
+    try:
+        user_to_unfollow = CustomUser.objects.get(id=user_id)  # ✅ Fix: This adds CustomUser.objects.all()
         request.user.following.remove(user_to_unfollow)
-        return Response({"message": f"You have unfollowed {user_to_unfollow.username}"}, status=200)
+        return Response({"message": "You have unfollowed this user."}, status=200)
+    except CustomUser.DoesNotExist:
+        return Response({"error": "User not found."}, status=404)
 
 # ✅ Fixed RegisterUserView
 class RegisterView(APIView):
