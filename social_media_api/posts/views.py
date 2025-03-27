@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404
+from rest_framework.generics import get_object_or_404 
 from rest_framework import viewsets, permissions, filters, generics
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import api_view, permission_classes
@@ -6,8 +6,7 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from rest_framework.response import Response
 from .models import Post, Comment, Like
 from .serializers import PostSerializer, CommentSerializer
-from notifications.models import Notification 
-from rest_framework.generics import get_object_or_404 
+from notifications.models import Notification  
 
 # ✅ Pagination class
 class StandardResultsSetPagination(PageNumberPagination):
