@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
 from rest_framework import viewsets, permissions
+from django.shortcuts import get_object_or_404
 from rest_framework import filters
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import api_view, permission_classes
@@ -28,18 +29,28 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     
-    # def get_queryset(self):
-    #     return Comment.objects.filter(post_id=self.kwargs['post_pk'])
-    
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
         
         
-class UserFeedView(generics.GenericAPIView):
+class FeedView(generics.ListAPIView):
+    serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request):
-        followed_users = request.user.following.all()  # Get users the current user follows
-        posts = Post.objects.filter(author__in=followed_users).order_by('-created_at')  # Filter posts
-        serializer = PostSerializer(posts, many=True)
-        return Response(serializer.data, status=200)
+    def get_queryset(self):
+        """Return posts from users that the current user follows, ordered by creation date (newest first)."""
+        user = self.request.user  # Get the logged-in user
+        followed_users = user.following.all()  # Get users they follow
+        return Post.objects.filter(author__in=followed_users).order_by('-created_at')  # ✅ Newest first
+    # def get_queryset(self):
+    #     return Comment.objects.filter(post_id=self.kwargs['post_pk'])
+    
+    
+# class UserFeedView(generics.GenericAPIView):
+#     permission_classes = [permissions.IsAuthenticated]
+
+#     def get(self, request):
+#         followed_users = request.user.following.all()  # Get users the current user follows
+#         posts = Post.objects.filter(author__in=followed_users).order_by('-created_at')  # Filter posts
+#         serializer = PostSerializer(posts, many=True)
+#         return Response(serializer.data, status=200)
