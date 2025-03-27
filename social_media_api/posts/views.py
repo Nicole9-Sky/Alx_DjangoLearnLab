@@ -38,10 +38,9 @@ class FeedView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        """Return posts from users that the current user follows, ordered by creation date (newest first)."""
-        user = self.request.user  # Get the logged-in user
-        followed_users = user.following.all()  # Get users they follow
-        return Post.objects.filter(author__in=followed_users).order_by('-created_at')  # ✅ Newest first
+        user = self.request.user  
+        following_users = user.following.all()  
+        return Post.objects.filter(author__in=followed_users).order_by('-created_at')  
     # def get_queryset(self):
     #     return Comment.objects.filter(post_id=self.kwargs['post_pk'])
     
